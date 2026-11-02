@@ -12,7 +12,7 @@ overlapping tiles (the default setting for real videos).
 
 Example::
 
-    python scripts/demo_video.py --generator ckpt/hive_20f/generator --shader ckpt/hive_20f \
+    python scripts/demo_video.py --generator checkpoints/hive_20f/generator --shader checkpoints/hive_20f \
         --frames_root data/my_capture/imgs --events_root data/my_capture/events --scene 001 \
         --output_dir outputs/demo_001
 """
@@ -68,6 +68,7 @@ def main():
     ds = LdrVideoDataset(args.frames_root, args.events_root, num_frames=args.num_frames, mode="infer", bins=args.bins,
                          out_size=args.size, event_scale=args.rescale, exposure_value=args.exposure_value,
                          scenes=[args.scene] if args.scene else None)
+    assert args.clip_start >= 1, "--clip_start must be >= 1 (event file clip_start-1 is needed)"
     gen_size = int(round(args.size * args.rescale))
     rng = torch.Generator(device=device).manual_seed(args.seed)
     for scene in ds.scenes:

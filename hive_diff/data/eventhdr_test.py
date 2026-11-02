@@ -54,12 +54,12 @@ def _load_event_voxel(path: str, height: int, width: int, bins: int = 4) -> np.n
 class EventHDRTestDataset(Dataset):
     def __init__(self, root: str, events_root: Optional[str] = None, num_frames: int = 20, bins: int = 4,
                  out_size: int = 512, up_scale: float = 1.0, reference_ev: float = 7.0, token_ev: float = 2.0,
-                 tonemap_k: float = 500.0, hdr_percentile: float = 99.9, window_bins=(1, 3, 5, 7),
+                 tonemap_k: float = 500.0, window_bins=(1, 3, 5, 7),
                  clips: Optional[List[str]] = None):
         self.root, self.events_root = root, events_root or root
         self.T, self.bins, self.out_size, self.up_scale = num_frames, bins, out_size, up_scale
         self.reference_ev, self.token_ev = reference_ev, token_ev
-        self.tonemap_k, self.hdr_percentile = tonemap_k, hdr_percentile
+        self.tonemap_k = tonemap_k
         self.window_bins = tuple(window_bins)
         self.clips: List[Dict] = []
         for name in sorted(os.listdir(root)):
@@ -99,7 +99,7 @@ class EventHDRTestDataset(Dataset):
         reference = torch.from_numpy(ref_u8).permute(2, 0, 1).float()[None] / 127.5 - 1.0
         reference = F.interpolate(reference, size=(S, S), mode="bilinear", align_corners=False)[0].half()
 
-        gt = np.stack([to_uint8(log_tonemap(fr, self.tonemap_k, self.hdr_percentile)) for fr in frames])  # (T,H,W,3)
+        gt = np.stack([to_uint8(log_tonemap(fr, self.tonemap_k)) for fr in frames])  # (T,H,W,3)
         gt = torch.from_numpy(gt).permute(0, 3, 1, 2).float() / 127.5 - 1.0
         pixel_values = F.interpolate(gt, size=(S, S), mode="bilinear", align_corners=False).half()
 

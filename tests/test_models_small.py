@@ -6,6 +6,7 @@ import os
 import struct
 import sys
 
+import pytest
 import torch
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -50,8 +51,7 @@ def _safetensors_shapes(path):
 def test_checkpoint_keys():
     gen_dir, shd_dir = os.environ.get("HIVE_GENERATOR_CKPT"), os.environ.get("HIVE_SHADER_CKPT")
     if not (gen_dir and shd_dir):
-        print("HIVE_GENERATOR_CKPT / HIVE_SHADER_CKPT not set; skipping")
-        return
+        pytest.skip("HIVE_GENERATOR_CKPT / HIVE_SHADER_CKPT not set")
     for cls, d in ((EventControlNet, gen_dir), (ShaderControlNet, shd_dir)):
         cfg = json.load(open(os.path.join(d, "config.json")))
         cfg = {k: v for k, v in cfg.items() if not k.startswith("_")}

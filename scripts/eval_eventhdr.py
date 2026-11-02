@@ -6,7 +6,7 @@ Example (20-frame model)::
     python scripts/eval_eventhdr.py \
         --svd stabilityai/stable-video-diffusion-img2vid \
         --generator checkpoints/hive_20f/generator --shader checkpoints/hive_20f \
-        --data_root /path/eventhdr_test --num_frames 20 --item_start 355 \
+        --data_root /path/to/eventhdr_test --num_frames 20 --item_start 355 --all_frames \
         --output_dir outputs/eventhdr_20f
 
 ``--shader`` points at a directory holding ``shader/`` (ControlNet weights) and ``ev_token.pt``.
@@ -93,9 +93,9 @@ def main():
     stride = args.item_stride or args.num_frames
 
     rows, per_clip = [], defaultdict(list)
-    prev = None
     n_done = 0
     for ci, clip in enumerate(ds.clips):
+        prev = None
         start, stop = int(ds.offsets[ci]), int(ds.offsets[ci + 1])
         for idx in range(start + args.item_start, stop, stride):
             if args.max_items and n_done >= args.max_items:

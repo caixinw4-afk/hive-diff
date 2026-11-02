@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""
-events_txt_to_Xbin_from_events.py  (accelerated)
+"""Bin v2e event streams into per-frame count tensors.
 
-Speed-ups added:
-  1) Multiprocessing across scenes: --workers N  (default: 1 = serial)
-  2) Threaded I/O for NPY/PNG writes: --io_workers M (default: 4)
-
-All outputs and filenames are unchanged from the original script.
+Reads ``<in_root>/<scene>/v2e/events.txt`` (t x y p) and, for every source-frame interval at
+``--fps``, accumulates the events into ``--bins`` equal time bins, written as an ``(H, W, bins)``
+array to ``<out_root>/<scene>/frames_np/frame_%06d.npy`` (``--mode signed``: ON minus OFF counts;
+``count``: all events). ``--png`` also writes one contrast-clipped preview per bin under
+``frames_png/``. Scenes are processed in parallel (``--workers``) with threaded writes
+(``--io_workers``).
 """
 
 from __future__ import annotations
-import argparse, math, sys, os
+import argparse, math, sys
 from pathlib import Path
 from typing import Tuple, List, Optional
 import numpy as np

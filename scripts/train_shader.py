@@ -87,6 +87,10 @@ def main():
     shader = ShaderControlNet.from_pretrained(args.shader_init) if args.shader_init else ShaderControlNet.from_unet(unet)
     shader = shader.float()
     ev_token = ExposureTokenMLP(unet.config.cross_attention_dim)
+    if args.shader_init:
+        tok = os.path.join(os.path.dirname(os.path.normpath(args.shader_init)), "ev_token.pt")
+        if os.path.isfile(tok):
+            ev_token.load_state_dict(torch.load(tok, map_location="cpu"))
     for m in (vae, image_encoder, unet, generator):
         m.requires_grad_(False).to(device)
     if args.gradient_checkpointing:
@@ -118,6 +122,7 @@ def main():
     rng = torch.Generator(device=device).manual_seed(args.seed or 0)
     T = args.num_frames
     sf = vae.config.scaling_factor
+    assert len(dataset) > 0, "dataset is empty: check the data roots and folder layout (docs/DATA.md)"
     accelerator.print(f"dataset {len(dataset)} windows over {len(dataset.scenes)} scenes; steps {args.max_steps}")
     shader.train(); ev_token.train()
     t_last = time.time()

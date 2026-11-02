@@ -43,7 +43,7 @@ from hive_diff.utils.training import clip_embed, log_normal  # noqa: E402
 DEFAULTS = dict(
     svd="stabilityai/stable-video-diffusion-img2vid", init=None, output_dir="outputs/generator", data="hdm",
     video_root=None, tone_root=None, events_root=None, frames_root=None, num_frames=20, crop=512, base_size=1024,
-    fine_bins=12, window_bins=[0, 4, 8, 12], ev_min=None, ev_max=None, warp_prob=0.75, finetune_warp_seed=42,
+    fine_bins=12, window_bins=None, ev_min=None, ev_max=None, warp_prob=0.75, finetune_warp_seed=42,
     batch_size=1, grad_accum=16, num_workers=8, lr=5e-5, lr_scheduler="constant", lr_warmup_steps=0, max_steps=12000,
     weight_decay=1e-2, adam_betas=[0.9, 0.999], seed=123, mixed_precision="fp16", gradient_checkpointing=True,
     cond_dropout=0.1, aux_weight=0.1, distill_residual_weight=0.0, distill_encoder_weight=0.0, distill_warmup_steps=500,
@@ -58,7 +58,7 @@ def parse_args():
     for k, v in DEFAULTS.items():
         if isinstance(v, bool):
             p.add_argument(f"--{k}", type=lambda s: s.lower() in ("1", "true", "yes"), default=None)
-        elif isinstance(v, list):
+        elif isinstance(v, list) or k == "window_bins":
             p.add_argument(f"--{k}", type=float, nargs="+", default=None)
         else:
             p.add_argument(f"--{k}", type=type(v) if v is not None else str, default=None)
@@ -73,7 +73,8 @@ def parse_args():
 
 def build_dataset(args):
     T = args.num_frames
-    windows = [int(b) for b in args.window_bins]
+    default_windows = {"hdm": (0, 4, 8, 12), "eventhdr": (1, 3, 5, 7), "ldr": (0, 2, 4, 6)}
+    windows = [int(b) for b in args.window_bins] if args.window_bins else list(default_windows[args.data])
     if args.data == "hdm":
         ev_range = (int(args.ev_min), int(args.ev_max)) if args.ev_min is not None else None
         return HdmSyntheticDataset(args.video_root, args.tone_root, args.events_root, num_frames=T, target="ldr",
@@ -147,6 +148,7 @@ def main():
 
     rng = torch.Generator(device=device).manual_seed(args.seed or 0)
     T, sf = args.num_frames, vae.config.scaling_factor
+    assert len(dataset) > 0, "dataset is empty: check the data roots and folder layout (docs/DATA.md)"
     accelerator.print(f"dataset {len(dataset)} windows; steps {args.max_steps}; distill={'on' if teacher else 'off'}")
     controlnet.train(); aux.train()
     t_last = time.time()

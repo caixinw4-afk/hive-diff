@@ -11,18 +11,17 @@ requires-python = ">=3.10"
 license = {text = "Apache-2.0"}
 dependencies = [
   "torch>=2.1",
-  "diffusers>=0.30,<0.40",
+  "diffusers>=0.32,<0.40",
   "transformers>=4.41",
   "accelerate>=0.30",
   "safetensors",
-  "einops",
   "numpy",
+  "Pillow",
   "opencv-python-headless",
   "imageio",
   "pyyaml",
-  "tqdm",
-  "scipy",
   "scikit-image",
+  "tensorboard",
   "OpenEXR>=3.2",
 ]
 

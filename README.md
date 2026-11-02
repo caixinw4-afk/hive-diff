@@ -8,7 +8,7 @@ ControlNets:
 ```
 reference LDR frame ──► CLIP token (+ exposure token) ──┐
                      ─► VAE latent ────────────────────┐ │
-events (4 ch / frame) ─► Generator ControlNet (stage 1) │ │   residuals
+events (4 windows/frame) ► Generator ControlNet (stage 1) │ │   residuals
                                  │ raw features         ▼ ▼
 previous clip latent ─► Shader ControlNet (stage 2) ──► frozen SVD UNet ──► VAE decoder ──► frames
 ```
@@ -30,7 +30,7 @@ pip install -e ".[eval]"
 Download the SVD base weights once (requires accepting Stability AI's license on Hugging Face):
 
 ```bash
-huggingface-cli download stabilityai/stable-video-diffusion-img2vid --include "vae/*" "unet/*fp16*" "unet/config.json" "image_encoder/*" "feature_extractor/*" "scheduler/*" "model_index.json"
+huggingface-cli download stabilityai/stable-video-diffusion-img2vid --include "vae/*" "unet/*" "image_encoder/*" "feature_extractor/*" "scheduler/*" "model_index.json"
 ```
 
 ## Model zoo
@@ -42,13 +42,13 @@ huggingface-cli download stabilityai/stable-video-diffusion-img2vid --include "v
 | `hive_20f` | 20 | `generator` | `shader/` + `ev_token.pt` | long clips, slower |
 | `hive_20f_eventhdr` | 20 | finetuned on EventHDR | same Shader | default setting |
 
-Weights: see [docs/MODEL_ZOO.md](docs/MODEL_ZOO.md) for download links and the exact training
-recipe of every checkpoint.
+The weights are not uploaded yet. [docs/MODEL_ZOO.md](docs/MODEL_ZOO.md) lists every checkpoint
+with its training recipe; download links will be added there.
 
 ## Quick start
 
-Generate from your own LDR frames + event voxels (12 time bins per frame interval, see
-[docs/DATA.md](docs/DATA.md) for the format):
+Generate from your own LDR frames + event voxels (12 time bins per frame interval, summed into
+4 nested windows per frame, see [docs/DATA.md](docs/DATA.md) for the format):
 
 ```bash
 python scripts/demo_video.py \
@@ -57,7 +57,8 @@ python scripts/demo_video.py \
   --output_dir outputs/demo_001
 ```
 
-Evaluate on the EventHDR test set (PSNR / histogram-matched PSNR / SSIM / LPIPS on tone-mapped frames):
+Evaluate on the EventHDR test set (PSNR / histogram-matched PSNR / SSIM / LPIPS on tone-mapped
+frames; `--all_frames` scores every frame of a clip, which is the setting used in the paper):
 
 ```bash
 python scripts/eval_eventhdr.py \
@@ -91,6 +92,18 @@ accelerate launch scripts/train_shader.py --config configs/train_shader_20f.yaml
 
 Every option in the YAML files can be overridden on the command line (`--lr 1e-5`). Training the
 20-frame models needs an 80 GB GPU (batch 1, gradient checkpointing); 5-frame models fit in 48 GB.
+The validation and test scenes of the synthetic set live in separate roots, so the training
+configs only see the 21 training scenes.
+
+## Tests
+
+```bash
+pytest tests/                          # CPU-only unit tests on small models
+HIVE_GENERATOR_CKPT=checkpoints/hive_20f/generator HIVE_SHADER_CKPT=checkpoints/hive_20f/shader pytest tests/
+```
+
+With the two environment variables set, the tests also check that the released checkpoints match
+the model definitions key by key.
 
 ## Repository layout
 
@@ -105,6 +118,14 @@ data_prep/             synthetic data generation (camera-shake HDR video + v2e e
 docs/                  data formats, model zoo
 ```
 
+## Acknowledgements
+
+HiVE-Diff builds on [Stable Video Diffusion](https://huggingface.co/stabilityai/stable-video-diffusion-img2vid)
+and [diffusers](https://github.com/huggingface/diffusers). The synthetic training data uses
+[HdM-HDR-2014](https://www.hdm-stuttgart.de/vmlab/hdm-hdr-2014) footage and
+[v2e](https://github.com/SensorsINI/v2e); real-capture evaluation uses the EventHDR dataset.
+The SVD weights and the HdM footage come with their own (non-commercial) licenses.
+
 ## License
 
-Apache-2.0, see `LICENSE`.
+The code is released under Apache-2.0, see `LICENSE`.

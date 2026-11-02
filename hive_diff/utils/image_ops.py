@@ -19,9 +19,9 @@ def render_ldr(hdr: np.ndarray, ev: float) -> np.ndarray:
     return (255.0 * y + 0.5).astype(np.uint8)
 
 
-def log_tonemap(hdr: np.ndarray, k: float = 500.0, percentile: float = 99.9) -> np.ndarray:
-    """Per-frame log tone-mapping used for the tone-mapped targets: log1p(k x / norm) / log1p(k)."""
-    norm = max(float(np.percentile(hdr, percentile)), float(hdr.max()), 1e-8)
+def log_tonemap(hdr: np.ndarray, k: float = 500.0) -> np.ndarray:
+    """Per-frame log tone-mapping used for the tone-mapped targets: log1p(k x / max) / log1p(k)."""
+    norm = max(float(hdr.max()), 1e-8)
     return np.clip(np.log1p(k * hdr / norm) / np.log1p(k), 0.0, 1.0)
 
 

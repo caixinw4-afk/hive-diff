@@ -11,3 +11,4 @@ logs/
 *.ckpt
 .DS_Store
 configs/local/
+*_local/

@@ -123,6 +123,8 @@ class HiveDiffPipeline(DiffusionPipeline):
         ``previous_clip``: (1, T, 4, h, w) un-scaled latents of the previous clip (the last-frame
         latent repeated T times) for clip-to-clip continuity; ``None`` for the first clip.
         ``prev_latent_scale`` weights those latents at inference (0.3 works well for long chains).
+        ``fps``: written to the SVD micro-conditioning as ``fps - 1`` like the stock SVD pipeline;
+        the released models were trained with ``fps_id: 7`` and sampled with the default ``fps=7``.
         """
         device = self._execution_device
         dtype = self.unet.dtype

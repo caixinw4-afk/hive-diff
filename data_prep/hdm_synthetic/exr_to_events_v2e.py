@@ -1,22 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-PNG (tone-mapped) -> events with v2e, previews moved aside.
+"""Simulate events from 8-bit frame folders with v2e.
 
-Default input layout:
-  <in_root>/<scene>/tonemapped_png/*.png
-
-Outputs:
-  - <out_root>/<scene>/v2e/*      (events, logs)
-  - <out_root>/<scene>/previews/* (preview videos/images)
-
-Notes:
-  * Uses folder-of-images mode; you MUST pass the true FPS via --fps.
-  * SuperSloMo enabled by default (safe batch_size, relaxed timestamp resolution).
+Input layout: ``<in_root>/<scene>/<input_subdir>/*.png`` (``preview_png`` by default). Outputs:
+``<out_root>/<scene>/v2e/`` (events.txt, aedat4, logs) and ``<out_root>/<scene>/previews/``.
+Frames are passed to v2e in folder-of-images mode, so the true frame rate must be given with
+``--fps``; SuperSloMo upsampling is enabled when ``--slomo_model`` is set.
 """
 
 from __future__ import annotations
-import argparse, glob, shlex, shutil, subprocess, sys, os
+import argparse, shlex, shutil, subprocess, sys, os
 from pathlib import Path
 
 def find_scene_dirs(in_root: Path, subdir: str, also_try_exr: bool, exts: list[str]) -> list[tuple[Path,str]]:
@@ -68,7 +61,7 @@ def run_v2e(
     img_dir: Path, out_dir: Path, fps: float,
     v2e_exec: str = "v2e",
     # DVS model (slightly lower thresholds for tone-mapped PNGs)
-    pos_thres: float = 0.10, neg_thres: float = 0.10, sigma_thres: float = 0.03,
+    pos_thres: float = 0.05, neg_thres: float = 0.05, sigma_thres: float = 0.015,
     cutoff_hz: float = 50.0, leak_rate_hz: float = 0.1, refractory_period: float = 5e-4,
     # SloMo / timing (safe defaults)
     auto_ts_res: bool = True, timestamp_resolution: float = 3e-3,
@@ -131,9 +124,9 @@ def main():
     ap.add_argument("--fallback_exr", action="store_true",
                     help="if no PNGs found, also try <scene>/hdr_shaken_exr/*.exr")
     # model
-    ap.add_argument("--pos_thres", type=float, default=0.10)
-    ap.add_argument("--neg_thres", type=float, default=0.10)
-    ap.add_argument("--sigma_thres", type=float, default=0.03)
+    ap.add_argument("--pos_thres", type=float, default=0.05)
+    ap.add_argument("--neg_thres", type=float, default=0.05)
+    ap.add_argument("--sigma_thres", type=float, default=0.015)
     ap.add_argument("--cutoff_hz", type=float, default=50.0)
     ap.add_argument("--leak_rate_hz", type=float, default=0.1)
     ap.add_argument("--refractory_period", type=float, default=5e-4)

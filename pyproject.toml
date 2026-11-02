@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hive-diff"
+version = "0.1.0"
+description = "HiVE-Diff: event-guided HDR video diffusion built on Stable Video Diffusion"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+dependencies = [
+  "torch>=2.1",
+  "diffusers>=0.30,<0.40",
+  "transformers>=4.41",
+  "accelerate>=0.30",
+  "safetensors",
+  "einops",
+  "numpy",
+  "opencv-python-headless",
+  "imageio",
+  "pyyaml",
+  "tqdm",
+  "scipy",
+  "scikit-image",
+  "OpenEXR>=3.2",
+]
+
+[project.optional-dependencies]
+eval = ["lpips", "pyiqa", "pandas"]
+dev = ["pytest"]
+
+[tool.setuptools.packages.find]
+include = ["hive_diff*"]

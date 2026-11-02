@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.egg-info/
+.venvs/
+.pipcache/
+outputs/
+logs/
+*.safetensors
+*.pt
+*.pth
+*.ckpt
+.DS_Store
+configs/local/

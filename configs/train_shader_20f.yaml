@@ -1,0 +1,29 @@
+# Stage 2: Shader ControlNet + exposure token on top of the frozen stage-1 Generator (20 frames).
+# Released model: step 7000 (batch 1 x accum 16, lr 5e-5, one 80 GB GPU).
+svd: stabilityai/stable-video-diffusion-img2vid
+generator: outputs/generator_20f/final/controlnet
+output_dir: outputs/shader_20f
+video_root: /path/to/hdm_graded/hdm_moving_camera
+tone_root: /path/to/hdm_graded/hdm_moving_camera_graded
+events_root: /path/to/hdm_graded/hdm_moving_camera_v2e_graded_npy
+num_frames: 20
+crop: 512
+fine_bins: 12
+window_bins: [0, 4, 8, 12]
+ev_min: -5
+ev_max: 4
+batch_size: 1
+grad_accum: 16
+lr: 5.0e-5
+max_steps: 7000
+seed: 123
+mixed_precision: fp16
+gradient_checkpointing: true
+prev_prob_start: 0.3
+prev_prob_end: 0.7
+prev_ramp_steps: 7000
+boundary_weight: 0.01
+generator_scale: 0.0
+shader_scale: 1.0
+residual_mode: multi
+fps_id: 7            # value written to the SVD added_time_ids during training

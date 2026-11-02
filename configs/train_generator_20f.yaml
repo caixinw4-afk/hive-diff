@@ -1,0 +1,27 @@
+# Stage 1: Generator ControlNet from scratch on the synthetic HdM data (20-frame clips).
+# Released model: trained ~11.5k optimizer steps (batch 1 x accum 16) on one 80 GB GPU.
+svd: stabilityai/stable-video-diffusion-img2vid
+output_dir: outputs/generator_20f
+data: hdm
+video_root: /path/to/hdm_graded/hdm_moving_camera
+tone_root: /path/to/hdm_graded/hdm_moving_camera_graded
+events_root: /path/to/hdm_graded/hdm_moving_camera_v2e_graded_npy
+num_frames: 20
+crop: 512
+fine_bins: 12
+window_bins: [0, 4, 8, 12]
+ev_min: -7
+ev_max: 4
+warp_prob: 0.75
+batch_size: 1
+grad_accum: 16
+lr: 5.0e-5
+max_steps: 12000
+seed: 123
+mixed_precision: fp16
+gradient_checkpointing: true
+aux_weight: 0.1
+residual_mode: multi
+fps_id: 7            # value written to the SVD added_time_ids during training
+checkpoint_every: 500
+keep_checkpoints: 2

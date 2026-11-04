@@ -1,4 +1,4 @@
-"""Build a :class:`HiveDiffPipeline` from the SVD base weights and HiVE-Diff checkpoints."""
+"""Build a :class:`HiveDiffPipeline` from the SVD base weights and HIVE-Diff checkpoints."""
 from __future__ import annotations
 
 import os

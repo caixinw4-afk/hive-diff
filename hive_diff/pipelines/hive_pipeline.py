@@ -1,4 +1,4 @@
-"""HiVE-Diff inference pipeline: reference LDR frame + events -> HDR (tone-mapped) video clip.
+"""HIVE-Diff inference pipeline: reference LDR frame + events -> HDR (tone-mapped) video clip.
 
 Built on the stock Stable Video Diffusion components (VAE, CLIP image encoder, UNet weights,
 Euler scheduler). The custom parts are the two ControlNets, the exposure token and the

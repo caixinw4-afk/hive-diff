@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Evaluate HiVE-Diff on the EventHDR real-capture test set.
+"""Evaluate HIVE-Diff on the EventHDR real-capture test set.
 
 Example (20-frame model)::
 

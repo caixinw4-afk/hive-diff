@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Run HiVE-Diff on your own LDR video + event voxels (no ground truth).
+"""Run HIVE-Diff on your own LDR video + event voxels (no ground truth).
 
 Input layout::
 

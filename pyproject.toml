@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "hive-diff"
 version = "0.1.0"
-description = "HiVE-Diff: event-guided HDR video diffusion built on Stable Video Diffusion"
+description = "HIVE-Diff: event-guided HDR video diffusion built on Stable Video Diffusion"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "Apache-2.0"}

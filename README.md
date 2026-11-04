@@ -1,9 +1,13 @@
-# HiVE-Diff: Event-Guided HDR Video Diffusion
+# HIVE-Diff: High Frame Rate HDR Video Reconstruction from a Single LDR Frame and Events
 
-HiVE-Diff turns a single LDR reference frame plus the event stream of an event camera into a
-tone-mapped HDR video clip, recovering detail in regions where the frame is over- or
-under-exposed. It is built on the frozen Stable Video Diffusion (SVD) image-to-video model and two
-ControlNets:
+[Caixin Wang](https://github.com/caixinw4-afk), Qingrui Wang, Jie Zhang, Ralph Etienne-Cummings
+
+WACV 2027 (Applications Track) | [arXiv:2611.03465](https://arxiv.org/abs/2611.03465)
+
+HIVE-Diff reconstructs a high frame rate HDR video from a single LDR reference frame and the
+event stream of an event camera, instead of needing one aligned LDR frame per output frame. It
+recovers detail where the reference is over- or under-exposed and is built on the frozen Stable
+Video Diffusion (SVD) image-to-video model and two ControlNets:
 
 ```
 reference LDR frame ──► CLIP token (+ exposure token) ──┐
@@ -118,9 +122,20 @@ data_prep/             synthetic data generation (camera-shake HDR video + v2e e
 docs/                  data formats, model zoo
 ```
 
+## Citation
+
+```bibtex
+@inproceedings{wang2027hivediff,
+  title     = {{HIVE-Diff}: High Frame Rate {HDR} Video Reconstruction from a Single {LDR} Frame and Events},
+  author    = {Wang, Caixin and Wang, Qingrui and Zhang, Jie and Etienne-Cummings, Ralph},
+  booktitle = {IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)},
+  year      = {2027}
+}
+```
+
 ## Acknowledgements
 
-HiVE-Diff builds on [Stable Video Diffusion](https://huggingface.co/stabilityai/stable-video-diffusion-img2vid)
+HIVE-Diff builds on [Stable Video Diffusion](https://huggingface.co/stabilityai/stable-video-diffusion-img2vid)
 and [diffusers](https://github.com/huggingface/diffusers). The synthetic training data uses
 [HdM-HDR-2014](https://www.hdm-stuttgart.de/vmlab/hdm-hdr-2014) footage and
 [v2e](https://github.com/SensorsINI/v2e); real-capture evaluation uses the EventHDR dataset.
